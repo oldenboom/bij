@@ -1,0 +1,65 @@
+    function keyboard(keyCode) {
+        var key = {}
+        key.code = keyCode;
+        key.isDown = false;
+        key.isUp= true;
+        key.release = undefined;
+        key.press = undefined;
+
+        key.upHandler = event => {
+            if (event.keyCode === key.code) {
+                if (key.isDown && key.release) key.release();
+                key.isDown = false;
+                key.isUp = true;
+            }
+            event.preventDefault();
+        }
+        key.downHandler = event => {
+            if (event.keyCode === key.code) {
+                if (key.isUp && key.press) key.press();
+                key.isUp = false;
+                key.isDown = true;
+                console.log("key down");
+            }
+            event.preventDefault();
+        }
+
+        const downListener = key.downHandler.bind(key);
+        const upListener = key.upHandler.bind(key);
+
+        window.addEventListener("keydown", downListener,false);
+        window.addEventListener("keyup",upListener,false);
+
+        key.unsubscribe = () => {
+            window.removeEventListener("keydown",downListener);
+            window.removeEventListener("keyup",upListener);
+        }
+        return key;
+    }
+
+
+
+    /* 
+
+        let right = keyboard(39), left = keyboard(37);
+
+        left.press = () => {
+            rotationspeed = -0.05;
+        }
+        left.release = () => {
+            rotationspeed = -0.01;
+        }
+        right.press = () => {
+            rotationspeed = 0.05;
+        }
+        right.release = () => {
+            rotationspeed = 0.01;
+        }
+
+        dox: https://github.com/kittykatattack/learningPixi#keyboard
+        source: https://github.com/kittykatattack/learningPixi/blob/master/examples/12_keyboardMovement.html
+
+        Note: to use the key-names, use event.key instead of event.keyCode. Using numerical values is faster but 
+        less self-documenting.
+
+    */

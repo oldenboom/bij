@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>  <title>Hallo met de TSO</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+
+        console.log("This game got created in 2020 by Rembert Oldenboom (Floating Point), as a first PIXIJS exercise.");
+
+        const contactEmail = 'overblijf@nicolaasbeetsschool.nl';
+
+        let assetsReady = false;
+        let fontsReady = false;
+        let jsonReady = false;
+
+        let helloTexts;
+
+        const googleFontSchool = 'Open Sans';           // Font for the schoolname
+        const googleFontExplainer = 'Gaegu';            // Font for the explainer
+
+
+        var supportsES6 = function() {
+          try {
+            new Function("(a = 0) => a");
+            return true;
+          }
+          catch (err) {
+            alert("Je browser lijkt helaas te oud voor dit spel. Installeer eens een nieuwere versie van Chrome of Firefox. Lukt het niet, mail dan even naar " + contactEmail + '.');
+            return false;
+          }
+        }();
+
+        // The setup will start when both fonts and assets are ready
+        function preLoaderCheck() {
+            if (fontsReady && assetsReady && jsonReady) {
+                setup();
+            }
+        }
+
+
+        // https://github.com/typekit/webfontloader
+        WebFont.load({
+            google: {
+                families: [googleFontSchool,googleFontExplainer]
+            },
+            loading: function() { console.log('Fonts loading'); },
+            active: function() { console.log('Fonts loaded'); fontsReady = true; preLoaderCheck(); },
+            inactive: function() { console.log('Font failure'); }
+        });
+ 
+    </script>
+    <style>
+        * { padding:0; margin:0; overflow-x:hidden; overflow-y:hidden;}
+        body { background-color:silver; }
+    </style>
+    <script type="text/javascript" src="pixi/pixi.min.js"></script>
+    <script type="text/javascript" src="pixi/pixiTextInput.min.js"></script>
+</head>
+<body>
+    <script>
+        if (supportsES6) {
+            let script = document.createElement("script");
+            script.src = "game.js";
+            document.body.appendChild(script);
+        }
+    </script>
+    <div id="canvas-placeholder">
+    </div>
+    
+</body>
+</html>
