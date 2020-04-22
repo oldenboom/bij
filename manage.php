@@ -1,4 +1,12 @@
 <?php 
+session_start();
+
+if (time() >= intval($_SESSION['token-expire'])) {
+	session_unset();
+	session_destroy();
+	session_start();
+}
+
 require "db.php";
 
 $status_values = array (
@@ -6,6 +14,17 @@ $status_values = array (
 	1 => 'Accoord',
 	2 => 'Afgewezen'
 );
+
+if(empty($_SESSION['token'])) {
+	$length =32;
+	if (version_compare(phpversion(), '7.0.0', '<')) {
+	    $_SESSION['token'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, $length); 
+	}
+	else {
+		$_SESSION['token'] = bin2hex(random_bytes(32));
+	}
+	$_SESSION['token-expire'] = time() + 3600;
+}
 
 ?><html>
 <head>
@@ -85,6 +104,28 @@ $status_values = array (
 </head>
 <body>
 
+<script>
+	function statusChange(radio) {
+		let status = parseInt(radio.value);
+		let id = parseInt(radio.name.substring(7));
+		let xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "status.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.onloadend = function() {
+        	if (this.status != 200) {
+        		alert('Something went wrong while saving the status change. Try to reload the page.');
+        	}
+        	else {
+	        	console.log(this);
+	        	console.log(xhttp);
+	        }
+        }
+        let csrf = '<?php echo $_SESSION['token']; ?>';
+        let request = "id=" + id + "&status=" + status + "&csrf=" + csrf;
+        xhttp.send(request);
+	}
+</script>
+
 
 <div class="grid-container">
 	<?php
@@ -104,6 +145,7 @@ $status_values = array (
 					name="status_<?php echo $field_id;?>" 
 					value="<?php echo STATUS_NEW; ?>" 
 					<?php echo $record['status'] == STATUS_NEW ? 'checked':''; ?> 
+					onclick="statusChange(this)"
 				/>
 				<label for="status-new_<?php echo $field_id;?>">Nieuw</label>
 				<input type="radio" 
@@ -112,6 +154,7 @@ $status_values = array (
 					name="status_<?php echo $field_id;?>" 
 					value="<?php echo STATUS_OK; ?>" 
 					<?php echo $record['status'] ==STATUS_OK ? 'checked':''; ?> 
+					onclick="statusChange(this)"
 				/>				
 				<label for="status-ok_<?php echo $field_id;?>">OK</label>
 				<input type="radio" 
@@ -120,6 +163,7 @@ $status_values = array (
 					name="status_<?php echo $field_id;?>" 
 					value="<?php echo STATUS_NOTOK; ?>" 
 					<?php echo $record['status'] == STATUS_NOTOK ? 'checked':''; ?> 
+					onclick="statusChange(this)"
 				/>
 				<label for="status-notok_<?php echo $field_id;?>">Niet OK</label>
 			</div>

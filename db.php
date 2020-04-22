@@ -81,4 +81,19 @@ function save_to_database($record) {
   $sql = sprintf("INSERT INTO `%s` SET (`timestamp`,`text`,`name`,`group`,`drawing`,`status`,`ip`,`browser_agent`) VALUES (%d,'%s','%s','%s','%s',%d,'%s','%s'",$timestamp,$text,$name,$group,$drawing,$status,$ip,$browser_agent);
 }
 
+
+function set_status($id,$status) {
+  global $db, $table;
+  $retValue = 'fail';
+
+  if ($id > 0 && in_array($status,array(STATUS_NEW,STATUS_OK,STATUS_NOTOK))) {
+    $sql = "UPDATE $table SET status = $status WHERE id = $id;";
+    $sql_result = $db->query($sql);
+    if ($sql_result-->errno == 0) {
+      $retValue = 'ok';
+    }
+    return $retValue;
+  }
+}
+
 ?>
