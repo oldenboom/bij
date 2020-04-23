@@ -47,7 +47,6 @@ if(empty($_SESSION['token'])) {
 		<?php // switch-field learned from: https://thestizmedia.com/radio-buttons-as-toggle-buttons-with-css/ ?>
 		.switch-field {
 			display: flex;
-			margin-bottom: 36px;
 			overflow: hidden;
 		}
 

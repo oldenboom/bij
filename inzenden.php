@@ -13,7 +13,7 @@ function handle_post_var($var) {
 
 
 function get_post_data() {
-	$name = handle_post_var('name');
+	$name = handle_post_var('submitter');
 	$group = handle_post_var('group');
 	$text = handle_post_var('text');
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -35,7 +35,7 @@ function get_post_data() {
 
 // MAIN
 
-if ( isset( $_POST['name']) && isset( $_POST['group']) && isset( $_POST['text']) ) {
+if ( isset( $_POST['submitter']) && isset( $_POST['group']) && isset( $_POST['text']) ) {
 	$record = get_post_data();
 	save_to_database($record);
 }

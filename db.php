@@ -44,14 +44,14 @@ function get_hellos($status = NULL, $ordering = NULL) {
   while ($row = $sql_result->fetch_object()) {
     $record = [
         'id'  => $row->id,
-        'timestamp'     => $row->timestamp,
-        'text'          => $row->text,
-        'submitter'     => $row->name,
-        'group'         => $row->group,
-        'drawing'       => $row->drawing,
-        'status'        => $row->status,
-        'ip'            => $row->ip,
-        'browser_agent' => $row->browser_agent
+        'timestamp'  => $row->timestamp,
+        'text'       => $row->text,
+        'submitter'  => $row->name,
+        'group'      => $row->group,
+        'drawing'    => $row->drawing,
+        'status'     => $row->status,
+        'ip'         => $row->ip,
+        'user_agent' => $row->user_agent
     ];
     $data[] = $record;
   }
@@ -65,20 +65,29 @@ function get_approved_hellos() {
 
 
 function save_to_database($record) {
-  global $db;
+  global $db,$table;
+
+  $retValue = false;
 
   $timestamp  = $record['timestamp'] ? intval($record['timestamp'],10) : time();
-  $text       = real_escape_string($record['timestamp']);
-  $name       = real_escape_string($record['submitter']);
-  $group      = real_escape_string($record['group']);
-  $drawing    = $record['drawing'] ? real_escape_string($record['drawing']) : '';
+  $text       = $db->real_escape_string($record['text']);
+  $name       = $db->real_escape_string($record['name']);
+  $group      = $db->real_escape_string($record['group']);
+  $drawing    = $record['drawing'] ? $db->real_escape_string($record['drawing']) : '';
   $status     = $record['status'] ? intval($record['status'],10) : 0;
-  $ip         = $record['ip'] ? real_escape_string($record['ip']) : '';
-  $browser_agent = $record['browser_agent'] ? real_escape_string($record['browser_agent']) : '';
+  $ip         = $record['ip'] ? $db->real_escape_string($record['ip']) : '';
+  $user_agent = $record['user_agent'] ? $db->real_escape_string($record['user_agent']) : '';
 
+  // $sql = "INSERT INTO `%s` SET (`timestamp`,`text`,`name`,`group`,`drawing`,`status`,`ip`,`browser_agent`) VALUES (%d,'%s','%s','%s','%s',%d,'%s','%s'",$timestamp,$text,$name,$group,$drawing,$status,$ip,$browser_agent);
+  $sql = sprintf("INSERT INTO `%s` (`timestamp`,`text`,`name`,`group`,`drawing`,`status`,`ip`,`user_agent`) VALUES (%d,'%s','%s','%s','%s',%d,'%s','%s')",$table,$timestamp,$text,$name,$group,$drawing,$status,$ip,$user_agent);
 
+  $sql_result = $db->query($sql);
+  if ($sql_result->errno ==0) {
+    $retValue = true;
+  }
 
-  $sql = sprintf("INSERT INTO `%s` SET (`timestamp`,`text`,`name`,`group`,`drawing`,`status`,`ip`,`browser_agent`) VALUES (%d,'%s','%s','%s','%s',%d,'%s','%s'",$timestamp,$text,$name,$group,$drawing,$status,$ip,$browser_agent);
+  return $retValue;
+
 }
 
 
